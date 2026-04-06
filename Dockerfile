@@ -13,15 +13,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy configuration and code
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# Copy dependencies first for caching
+COPY pyproject.toml uv.lock ./
+
+# Install project dependencies using uv
+RUN uv sync --no-dev --no-install-project
 
 # Copy the rest of the application
 COPY . .
 
-# Expose the standard port for Hugging Face Spaces (or use any port, then uvicorn runs it)
+# Install the project itself in editable mode so 'server' script is available
+RUN pip install -e .
+
+# Expose the standard port for Hugging Face Spaces
 EXPOSE 7860
 
-# Run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run the project script 'server'
+CMD ["server"]

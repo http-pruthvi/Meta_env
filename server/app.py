@@ -1,8 +1,8 @@
 import os
 from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
-from models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
-from env_logic import CloudEnv
+from .models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
+from .env_logic import CloudEnv
 import logging
 
 # Configure logging
@@ -50,8 +50,11 @@ async def state():
         is_active=not env.done
     )
 
-if __name__ == "__main__":
+def start():
     import uvicorn
     # Use port 7860 for Hugging Face Spaces
     port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=port, reload=False)
+
+if __name__ == "__main__":
+    start()
