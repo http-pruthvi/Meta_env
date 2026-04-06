@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
 from models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
 from env_logic import CloudEnv
@@ -28,14 +28,14 @@ async def root():
     return {"status": "running", "environment": "Cloud Systems Incident Responder", "api": "OpenEnv"}
 
 @app.post("/reset", response_model=ResetResponse)
-async def reset(request: ResetRequest = None):
+async def reset(request: ResetRequest = Body(None)):
     # Handle missing body or missing task_id
     task_id = request.task_id if (request and request.task_id) else "task_easy_port_mismatch"
     obs, info = env.reset(task_id)
     return ResetResponse(observation=obs, info=info)
 
 @app.post("/step", response_model=StepResponse)
-async def step(request: StepRequest = None):
+async def step(request: StepRequest = Body(None)):
     # Handle missing body or missing command
     command = request.command if (request and request.command) else "ls"
     obs, reward, done, info = env.step(command)
