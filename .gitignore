@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.DS_Store
+.env
+secret.txt
+validate_env.py
+inference_results.json
+C:\Users\pruthvi\.gemini\antigravity\brain\878236b8-bab5-44e7-bb66-771671c77d6e\*
