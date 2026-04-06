@@ -1,0 +1,21 @@
+version: "1.0.0"
+environment_id: "cloud-incident-responder"
+description: "A real-world DevOps environment for AI agents to diagnose and fix system incidents."
+tasks:
+  - id: "task_easy_port_mismatch"
+    difficulty: "easy"
+    description: "Fix Nginx port mismatch (8000 -> 8080)."
+  - id: "task_medium_missing_creds"
+    difficulty: "medium"
+    description: "Update .env with database credentials from secrets.txt."
+  - id: "task_hard_resource_leak"
+    difficulty: "hard"
+    description: "Kill a memory-leaking process and increase memory limits in limits.yaml."
+
+action_space:
+  type: "text"
+  description: "CLI-style commands: ls <path>, cat <file>, write <file> <content>, ps, kill <pid>, restart <service>, done"
+
+observation_space:
+  type: "json"
+  description: "A JSON object containing filesystem mapping, process list, recent logs, and step info."

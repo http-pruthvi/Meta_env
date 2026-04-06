@@ -1,0 +1,37 @@
+import os
+from fastapi import FastAPI, HTTPException
+from models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
+from env_logic import CloudEnv
+
+app = FastAPI(title="Cloud Systems Incident Responder - OpenEnv")
+
+# In-memory store for environment state (one per app instance for simplicity)
+env = CloudEnv()
+
+@app.post("/reset", response_model=ResetResponse)
+async def reset(request: ResetRequest):
+    obs, info = env.reset(request.task_id)
+    return ResetResponse(observation=obs, info=info)
+
+@app.post("/step", response_model=StepResponse)
+async def step(request: StepRequest):
+    # The request is expected to have a 'command' field based on Action model
+    # Wait, StepRequest in models.py is actually Action? Let me fix the naming consistency.
+    # I'll use the Action model as the body.
+    obs, reward, done, info = env.step(request.command)
+    return StepResponse(observation=obs, reward=reward, done=done, info=info)
+
+@app.get("/state", response_model=StateResponse)
+async def state():
+    return StateResponse(
+        task_id=env.task_id,
+        step_count=env.step_count,
+        max_steps=env.max_steps,
+        is_active=not env.done
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    # Use port 7860 for Hugging Face Spaces
+    port = int(os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port)
