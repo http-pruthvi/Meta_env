@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
@@ -27,16 +28,17 @@ async def root():
     return {"status": "running", "environment": "Cloud Systems Incident Responder", "api": "OpenEnv"}
 
 @app.post("/reset", response_model=ResetResponse)
-async def reset(request: ResetRequest):
-    obs, info = env.reset(request.task_id)
+async def reset(request: ResetRequest = None):
+    # Handle missing body or missing task_id
+    task_id = request.task_id if (request and request.task_id) else "task_easy_port_mismatch"
+    obs, info = env.reset(task_id)
     return ResetResponse(observation=obs, info=info)
 
 @app.post("/step", response_model=StepResponse)
-async def step(request: StepRequest):
-    # The request is expected to have a 'command' field based on Action model
-    # Wait, StepRequest in models.py is actually Action? Let me fix the naming consistency.
-    # I'll use the Action model as the body.
-    obs, reward, done, info = env.step(request.command)
+async def step(request: StepRequest = None):
+    # Handle missing body or missing command
+    command = request.command if (request and request.command) else "ls"
+    obs, reward, done, info = env.step(command)
     return StepResponse(observation=obs, reward=reward, done=done, info=info)
 
 @app.get("/state", response_model=StateResponse)

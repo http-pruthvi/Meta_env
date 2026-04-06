@@ -12,10 +12,10 @@ class Observation(BaseModel):
     last_action_error: Optional[str] = None
 
 class StepRequest(BaseModel):
-    command: str = Field(..., description="The CLI command to execute (e.g., 'ls', 'cat', 'write', 'restart')")
+    command: Optional[str] = Field(None, description="The CLI command to execute (e.g., 'ls', 'cat', 'write', 'restart')")
 
 class ResetRequest(BaseModel):
-    task_id: str = Field(..., description="The task identifier (easy, medium, hard)")
+    task_id: Optional[str] = Field(None, description="The task identifier (easy, medium, hard)")
 
 class ResetResponse(BaseModel):
     observation: Observation
