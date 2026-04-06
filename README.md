@@ -1,3 +1,14 @@
+---
+title: Cloud Devops Openenv
+emoji: 🔧
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # Cloud Systems Incident Responder - OpenEnv Environment
 
 A real-world OpenEnv environment where an AI agent acts as a Junior DevOps Engineer to diagnose and resolve system incidents in a simulated cloud server.

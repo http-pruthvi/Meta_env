@@ -1,12 +1,30 @@
-import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from models import ResetRequest, ResetResponse, StepRequest, StepResponse, StateResponse, Observation, Reward
 from env_logic import CloudEnv
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Cloud Systems Incident Responder - OpenEnv")
 
+# Add CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # In-memory store for environment state (one per app instance for simplicity)
 env = CloudEnv()
+
+@app.get("/")
+async def root():
+    return {"status": "running", "environment": "Cloud Systems Incident Responder", "api": "OpenEnv"}
 
 @app.post("/reset", response_model=ResetResponse)
 async def reset(request: ResetRequest):
