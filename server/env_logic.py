@@ -1,6 +1,6 @@
 import re
 from typing import Dict, List, Any, Optional, Tuple
-from models import Observation, Reward
+from .models import Observation, Reward
 
 class CloudEnv:
     def __init__(self):
