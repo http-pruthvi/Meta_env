@@ -1,9 +1,10 @@
-# Use a lightweight Python base image
-FROM python:3.11-slim
+# Use a specific and stable Python base image
+FROM python:3.11-slim-bookworm
 
-# Set environment variables for non-interactive installs
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/app/.venv/bin:$PATH"
 
 # Set the working directory
 WORKDIR /app
