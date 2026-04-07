@@ -7,8 +7,8 @@ from typing import List, Dict, Any, Optional
 
 # Configuration
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY = os.getenv("API_KEY", os.getenv("HF_TOKEN", "dummy"))
 MODEL_NAME = os.getenv("MODEL_NAME", "openai/gpt-4o")
-HF_TOKEN = os.getenv("HF_TOKEN", "")
 ENV_URL = os.getenv("ENV_URL", "http://localhost:7860")
 
 # Task Definitions
@@ -99,7 +99,8 @@ def main():
         # Fallback if running locally without token
         pass
 
-    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN or "dummy")
+    # Initialize client with platform-provided proxy URL and API Key
+    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     
     for task in TASKS:
         run_task(client, task)
