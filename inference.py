@@ -6,8 +6,9 @@ from openai import OpenAI
 from typing import List, Dict, Any, Optional
 
 # Configuration
+HF_TOKEN = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
-API_KEY = os.getenv("API_KEY", os.getenv("HF_TOKEN", "dummy"))
+API_KEY = os.getenv("API_KEY", HF_TOKEN or "dummy")
 MODEL_NAME = os.getenv("MODEL_NAME", "openai/gpt-4o")
 ENV_URL = os.getenv("ENV_URL", "http://localhost:7860")
 
@@ -95,15 +96,19 @@ Respond with ONLY the command string.
         print(f"[END] success={success} steps={step_n} score={task_score:.2f} rewards={rewards_str}")
 
 def main():
+    # Validation check for required environment variables
     if not HF_TOKEN and "localhost" not in ENV_URL:
-        # Fallback if running locally without token
-        pass
-
-    # Initialize client with platform-provided proxy URL and API Key
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+        print("Warning: HF_TOKEN is not set, and ENV_URL is not localhost. This may cause authentication errors.")
     
-    for task in TASKS:
-        run_task(client, task)
+    try:
+        # Initialize client with platform-provided proxy URL and API Key
+        client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+        
+        for task in TASKS:
+            run_task(client, task)
+    except Exception as e:
+        print(f"Failed to initialize OpenAI client or run tasks: {str(e)}")
+        exit(1)
 
 if __name__ == "__main__":
     main()
