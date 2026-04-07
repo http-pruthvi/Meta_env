@@ -1,5 +1,5 @@
-# Use a specific and stable Python base image
-FROM python:3.11-slim-bookworm
+# Use a reliable mirror for the base image to avoid Docker Hub throttling
+FROM public.ecr.aws/docker/library/python:3.11-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
