@@ -59,7 +59,7 @@ class CloudEnv:
         self.step_count += 1
         self.last_action_result = None
         self.last_action_error = None
-        reward_val = 0.0
+        reward_val = 0.01 # Base participation reward (strictly > 0.0)
         reward_reason = "Executed command: " + action_str
 
         # Simulation of commands
@@ -68,7 +68,7 @@ class CloudEnv:
                 file_path = action_str[4:].strip()
                 if file_path in self.fs:
                     self.last_action_result = f"Content of {file_path}:\n{self.fs[file_path]}"
-                    reward_val = 0.1 # Reward for looking at relevant files
+                    reward_val += 0.02 # Minimal reward for exploration
                 else:
                     self.last_action_error = f"Error: File {file_path} not found"
             
@@ -85,14 +85,14 @@ class CloudEnv:
                     # Grader for Task 1
                     if self.task_id == "task_easy_port_mismatch" and file_path == "/etc/nginx/nginx.conf":
                         if "proxy_pass http://localhost:8080" in content:
-                            reward_val = 0.8
+                            reward_val = 0.9
                             self.done = True
                             self.last_action_result += " - PORT MISMATCH FIXED!"
                     
                     # Grader for Task 2
                     if self.task_id == "task_medium_missing_creds" and file_path == "/app/.env":
                         if "DB_URL=postgres://db.internal:5432/main" in content:
-                            reward_val = 0.5
+                            reward_val = 0.4
                             self.last_action_result += " - Credentials updated."
 
             elif action_str == "ps":
@@ -105,7 +105,7 @@ class CloudEnv:
                 if len(self.processes) < original_len:
                     self.last_action_result = f"Successfully killed process {pid}"
                     if self.task_id == "task_hard_resource_leak" and pid == 999:
-                        reward_val = 0.4
+                        reward_val = 0.35
                 else:
                     self.last_action_error = f"Error: PID {pid} not found"
 
@@ -116,14 +116,14 @@ class CloudEnv:
                 # Final evaluation for Task 2
                 if self.task_id == "task_medium_missing_creds":
                     if "DB_URL=postgres://db.internal:5432/main" in self.fs.get("/app/.env", ""):
-                         reward_val = 0.5 # Total 1.0
+                         reward_val = 0.4
                 
                 # Final evaluation for Task 3
                 if self.task_id == "task_hard_resource_leak":
                     killed_hog = all(p["pid"] != 999 for p in self.processes)
                     limit_updated = "memory_limit: 512MB" in self.fs.get("/etc/system/limits.yaml", "")
                     if killed_hog and limit_updated:
-                        reward_val = 0.6 # Total 1.0 (0.4 from kill)
+                        reward_val = 0.55
 
             else:
                 self.last_action_error = f"Error: Unknown command '{action_str}'"

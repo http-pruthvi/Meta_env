@@ -28,7 +28,7 @@ def run_task(client: OpenAI, task_id: str):
             data = resp.json()
             observation = data["observation"]
         except Exception as e:
-            print(f"[END] success=false steps=0 score=0.00 rewards= error=Reset failed: {str(e)}")
+            print(f"[END] success=false steps=0 score=0.01 rewards= error=Reset failed: {str(e)}")
             return
 
         done = False
@@ -89,9 +89,8 @@ Respond with ONLY the command string.
 
         # [END] output
         success = "true" if any(r > 0.5 for r in rewards) else "false"
-        score = sum(rewards) / len(TASKS) # Simplified score mapping
-        # Wait, the requirement says score in [0, 1] per task. So score = sum(rewards) clamped to 1.0
-        task_score = min(sum(rewards), 1.0)
+        # Ensure score is strictly between 0 and 1 (OpenEnv requirement)
+        task_score = max(0.01, min(sum(rewards), 0.99))
         rewards_str = ",".join([f"{r:.2f}" for r in rewards])
         print(f"[END] success={success} steps={step_n} score={task_score:.2f} rewards={rewards_str}")
 
